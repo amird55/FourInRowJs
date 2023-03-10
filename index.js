@@ -9,10 +9,16 @@ app.use('/CSS', express.static(__dirname + "/CSS"));
 
 var board=[];
 createBoard();
-dropCoin(1,2);
-console.log(board);
+
 const router = express.Router();
 var cnt=0;
+var LastMove={}
+router.get('/GetMove/:p/:c',function(req,res){
+  let plyr=Number(req.params.p);
+  let col =Number(req.params.c);
+  dropCoin(col,plyr);
+  res.send(LastMove);
+});
 router.get('/', (req, res) => {        //get requests to the root ("/") will route here
       cnt++;
       res.render("index", {
@@ -42,6 +48,9 @@ function dropCoin(col,plyr){
   for(let r=board.length-1;r>=0;r--){
     if(board[r][col]==0){
       board[r][col]=plyr;
+      LastMove.row=r;
+      LastMove.col=col;
+      LastMove.plyr=plyr;
       break;
     }
   }
