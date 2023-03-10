@@ -13,6 +13,9 @@ createBoard();
 const router = express.Router();
 var cnt=0;
 var LastMove={}
+router.get('/GetLast',function(req,res){
+  res.send(LastMove);
+});
 router.get('/GetMove/:p/:c',function(req,res){
   let plyr=Number(req.params.p);
   let col =Number(req.params.c);

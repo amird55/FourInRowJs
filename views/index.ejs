@@ -40,11 +40,18 @@
         let response = await fetch(`/GetMove/${player}/${col}`);
         let data = await response.json();
         console.log(data);
-        let pos=""+data.row+data.col;
+        let pos=""+data.row+data.col; 
         SetTile(pos,data.plyr);
         //updateData(data);
-        
+
     }
+    async function getUpdate(){
+        let response = await fetch(`/GetLast`);
+        let data = await response.json();
+        let pos=""+data.row+data.col; 
+        SetTile(pos,data.plyr);
+    }
+    setInterval(getUpdate, 1000);
     </script>
 </body>
 </html>
