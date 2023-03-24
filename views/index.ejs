@@ -19,9 +19,23 @@
     }
     .p1{background-color: yellow;}
     .p2{background-color: red;}
+    #finished{
+        width: 400px;
+        height: 100px;
+        background-color: rgba(139, 0, 0, 0.8);
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        padding-top: 20%;
+        position: absolute;
+        top:10px;
+        margin: 0 auto;
+        display: none;
+    }
     </style>
 </head>
 <body>
+<div id="finished"> Game Over</div>
     <table>
     <% for(let r=0;r<6;r++){ %>
         <tr>
@@ -32,24 +46,33 @@
     <% } %>
     </table>
     <script>
-    var player=<%= timesShown %>;
+    var player= <%= timesShown %>;
     function SetTile(pos,plyr){
         document.getElementById(pos).classList.add("p"+plyr);
     }
     async function dropOne(col){
         let response = await fetch(`/GetMove/${player}/${col}`);
         let data = await response.json();
-        console.log(data);
-        let pos=""+data.row+data.col; 
-        SetTile(pos,data.plyr);
-        //updateData(data);
+        updateData(data);
 
     }
     async function getUpdate(){
         let response = await fetch(`/GetLast`);
         let data = await response.json();
-        let pos=""+data.row+data.col; 
-        SetTile(pos,data.plyr);
+        updateData(data);
+    }
+    function updateData(data){
+        console.log(data);
+        if(data.GameOver==1){
+            GameOver();
+        } else {
+            let pos = "" + data.row + data.col;
+            SetTile(pos, data.plyr);
+        }
+    }
+    function GameOver(){
+        document.getElementById("finished").style.display="block";
+        console.log(document.getElementById("finished").style);
     }
     setInterval(getUpdate, 1000);
     </script>

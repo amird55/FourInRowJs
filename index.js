@@ -13,14 +13,23 @@ createBoard();
 const router = express.Router();
 var cnt=0;
 var LastMove={}
+LastMove.GameOver=0;
+var CurrentPlayer=1;
 router.get('/GetLast',function(req,res){
   res.send(LastMove);
 });
 router.get('/GetMove/:p/:c',function(req,res){
-  let plyr=Number(req.params.p);
-  let col =Number(req.params.c);
-  dropCoin(col,plyr);
-  res.send(LastMove);
+    if(CurrentPlayer == req.params.p) {
+        let plyr = Number(req.params.p);
+        let col = Number(req.params.c);
+        dropCoin(col, plyr);
+        if(CheckFinish(plyr)){
+            EndGame();
+        } else {
+            CurrentPlayer = (CurrentPlayer == 1) ? 2 : 1;
+        }
+    }
+    res.send(LastMove);
 });
 router.get('/', (req, res) => {        //get requests to the root ("/") will route here
       cnt++;
@@ -57,4 +66,57 @@ function dropCoin(col,plyr){
       break;
     }
   }
+}
+function EndGame(){
+    console.log("FINISHED");
+    LastMove.GameOver=1;
+}
+function CheckFinish(plyr){
+    for(let r=0;r<6;r++) {
+        for (let c = 0; c < 7; c++) {
+            if(board[r][c]==plyr){
+                if((c+3<7)&&(CheckRight(r,c)))
+                    return true;
+                if((r+3<6)&&(CheckDown(r,c)))
+                    return true;
+                if((c+3<7)&&(r+3<6)&&(CheckDiag1(r,c)))
+                    return true;
+                if((c>=3)&&(r+3<6)&&(CheckDiag2(r,c)))
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+function CheckRight(rr,cc){
+    for(let k=1;k<4;k++){
+        if(board[rr][cc]!=board[rr][cc+k]){
+            return false;
+        }
+    }
+    return true;
+}
+function CheckDown(rr,cc){
+    for(let k=1;k<4;k++){
+        if(board[rr][cc]!=board[rr+k][cc]){
+            return false;
+        }
+    }
+    return true;
+}
+function CheckDiag1(rr,cc){
+    for(let k=1;k<4;k++){
+        if(board[rr][cc]!=board[rr+k][cc+k]){
+            return false;
+        }
+    }
+    return true;
+}
+function CheckDiag2(rr,cc){
+    for(let k=1;k<4;k++){
+        if(board[rr][cc]!=board[rr+k][cc-k]){
+            return false;
+        }
+    }
+    return true;
 }
